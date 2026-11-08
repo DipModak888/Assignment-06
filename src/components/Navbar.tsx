@@ -1,123 +1,57 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useContext } from "react";
-
 import logo from "@/assets/logo.png";
+import { useFitlog } from "@/context/FitlogContext";
 
-const Navbar = () => {
-    const pathname = usePathname();
-    const myPlanCount = length || 0;
-    const savedCount = length || 0;
+export default function Navbar() {
+  const pathname = usePathname();
+  const { plan, saved } = useFitlog();
 
-    const navClass = (path: string) => {
-        const isActive = pathname === path;
+  const links = [
+    { href: "/", label: "Workouts", active: pathname === "/" || pathname.startsWith("/workout") },
+    { href: "/my-plan", label: "My Plan", active: pathname.startsWith("/my-plan") },
+  ];
 
-        return isActive
-            ? "rounded-full bg-[#baff00] px-5 py-2 text-[12px] font-semibold text-[#0a0b0d] shadow-[0_0_20px_-4px_rgba(186,255,0,0.5)] transition"
-            : "rounded-full px-5 py-2 text-[12px] font-medium text-[#9a9ca4] transition-colors duration-200 hover:bg-white/[0.06] hover:text-white";
-    };
+  return (
+    <header className="sticky top-0 z-50 border-b border-[#1c1f26] bg-[#0c0d10]/95 backdrop-blur">
+      <div className="mx-auto flex h-20 max-w-[1280px] items-center justify-between gap-2 px-4 sm:px-6">
+        <Link href="/" className="flex items-center gap-2.5" aria-label="FitLog home">
+          <Image src={logo} alt="FitLog logo" width={28} height={28} className="h-7 w-7 object-contain" priority />
+          <span className="hidden font-display text-lg font-bold tracking-[0.05em] text-white sm:inline">FITLOG</span>
+        </Link>
 
-    return (
-        <nav className="sticky top-0 z-50 w-full border-b border-white/[0.06] bg-[#0a0b0d]/80 backdrop-blur-xl">
-            <div className="mx-auto flex h-[70px] max-w-7xl items-center justify-between px-6">
-
-                <Link href="/" className="flex items-center gap-2.5">
-                    <Image
-                        src={logo}
-                        alt="FITLOG"
-                        width={28}
-                        height={28}
-                        className="h-7 w-7 object-contain"
-                    />
-
-                    <span className="text-[17px] font-bold tracking-tight text-white">
-                        FITLOG
-                    </span>
-                </Link>
-
-                <nav className="hidden items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.03] p-1 md:flex">
-
-                    <Link href="/" className={navClass("/")}>
-                        Workouts
-                    </Link>
-
-                    <Link href="/component/my-plan" className={navClass("/component/my-plan")}>
-                        My Plan
-                    </Link>
-
-                </nav>
-
-                <div className="hidden items-center gap-6 text-[12px] md:flex">
-
-                    <Link href="/component/my-plan" className="group flex items-center gap-2 text-[#9a9ca4] transition-colors duration-200 hover:text-white">
-                        <span>Plan</span>
-
-                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#baff00] px-1.5 text-[10px] font-bold text-[#0a0b0d] transition-transform duration-200 group-hover:scale-110">
-                            {myPlanCount}
-                        </span>
-                    </Link>
-
-                    <Link href="/component/my-plan" className="group flex items-center gap-2 text-[#9a9ca4] transition-colors duration-200 hover:text-white">
-                        <span>Saved</span>
-
-                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full border border-white/[0.12] px-1.5 text-[10px] text-[#9a9ca4] transition-colors duration-200 group-hover:border-[#baff00] group-hover:text-[#baff00]">
-                            {savedCount}
-                        </span>
-                    </Link>
-
-                </div>
-
-                <div className="dropdown dropdown-end md:hidden">
-
-                    <button tabIndex={0} className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-white transition-colors duration-200 hover:bg-white/[0.08]">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M4 6h16M4 12h16M4 18h16"
-                            />
-                        </svg>
-                    </button>
-
-                    <ul tabIndex={0} className="menu dropdown-content z-[100] mt-3 w-52 rounded-2xl border border-white/[0.08] bg-[#0d0e11]/95 p-2 shadow-2xl backdrop-blur-xl">
-                        <li>
-                            <Link href="/" className={pathname === "/" ? "text-[#baff00]" : "text-[#9a9ca4] hover:text-[#baff00]"}>Workouts</Link>
-                        </li>
-
-                        <li>
-                            <Link href="/component/my-plan" className={pathname === "/component/my-plan" ? "text-[#baff00]" : "text-[#9a9ca4] hover:text-[#baff00]"}>
-                                My Plan
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link href="/component/my-plan">
-                                Plan
-                                <span className="ml-auto rounded-full bg-[#baff00] px-2 py-0.5 text-[10px] font-bold text-[#0a0b0d]">
-                                    {myPlanCount}
-                                </span>
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link href="/component/my-plan">
-                                Saved
-                                <span className="ml-auto rounded-full border border-white/[0.12] px-2 py-0.5 text-[10px]">
-                                    {savedCount}
-                                </span>
-                            </Link>
-                        </li>
-                    </ul>
-
-                </div>
-
-            </div>
+        <nav className="flex items-center">
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className={`rounded-full px-3 py-1.5 text-xs transition-colors sm:px-4 ${
+                l.active ? "bg-[#1a2312] font-semibold text-[#c2f800]" : "font-medium text-[#9ca3af] hover:text-white"
+              }`}
+            >
+              {l.label}
+            </Link>
+          ))}
         </nav>
-    );
-};
 
-export default Navbar;
+        <div className="flex items-center gap-3 sm:gap-6">
+          <Link href="/my-plan" className="flex items-center gap-2" aria-label={`Plan: ${plan.length}`}>
+            <span className="hidden text-xs font-medium text-[#d1d5db] sm:inline">Plan</span>
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#c2f800] px-1 text-[11px] font-bold text-black">
+              {plan.length}
+            </span>
+          </Link>
+          <Link href="/my-plan" className="flex items-center gap-2" aria-label={`Saved: ${saved.length}`}>
+            <span className="hidden text-xs font-medium text-[#9ca3af] sm:inline">Saved</span>
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full border border-[#2d313b] px-1 text-[11px] font-medium text-[#d1d5db]">
+              {saved.length}
+            </span>
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+}
