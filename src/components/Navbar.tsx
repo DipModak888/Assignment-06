@@ -1,158 +1,123 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useContext } from "react";
 
-import Logo from "@/assets/logo.png";
+import logo from "@/assets/logo.png";
 
+const Navbar = () => {
+    const pathname = usePathname();
+    const myPlanCount = length || 0;
+    const savedCount = length || 0;
 
-type NavbarProps = {
-  activePage: "workouts" | "my-plan";
-};
+    const navClass = (path: string) => {
+        const isActive = pathname === path;
 
-const Navbar = ({ activePage }: NavbarProps) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+        return isActive
+            ? "rounded-full bg-[#baff00] px-5 py-2 text-[12px] font-semibold text-[#0a0b0d] shadow-[0_0_20px_-4px_rgba(186,255,0,0.5)] transition"
+            : "rounded-full px-5 py-2 text-[12px] font-medium text-[#9a9ca4] transition-colors duration-200 hover:bg-white/[0.06] hover:text-white";
+    };
 
- 
+    return (
+        <nav className="sticky top-0 z-50 w-full border-b border-white/[0.06] bg-[#0a0b0d]/80 backdrop-blur-xl">
+            <div className="mx-auto flex h-[70px] max-w-7xl items-center justify-between px-6">
 
-  return (
-    <nav className="relative w-full border-b border-white/10 bg-[#0b0f10] text-white">
-      <div className="container mx-auto flex h-[72px] items-center px-4 md:px-8">
+                <Link href="/" className="flex items-center gap-2.5">
+                    <Image
+                        src={logo}
+                        alt="FITLOG"
+                        width={28}
+                        height={28}
+                        className="h-7 w-7 object-contain"
+                    />
 
-        {/* Logo */}
-        <div className="flex-1">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src={Logo}
-              alt="FitLog Logo"
-              width={32}
-              height={32}
-              className="h-8 w-8 object-contain"
-            />
+                    <span className="text-[17px] font-bold tracking-tight text-white">
+                        FITLOG
+                    </span>
+                </Link>
 
-            <span className="text-lg font-extrabold tracking-tight">
-              FITLOG
-            </span>
-          </Link>
-        </div>
+                <nav className="hidden items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.03] p-1 md:flex">
 
-        {/* Desktop Navigation */}
-        <div className="hidden flex-1 justify-center sm:flex">
-          <div className="flex items-center gap-2">
+                    <Link href="/" className={navClass("/")}>
+                        Workouts
+                    </Link>
 
-            {/* Workouts */}
-            <Link
-              href="/"
-              className={
-                activePage === "workouts"
-                  ? "rounded-full bg-lime-400 px-5 py-2 font-semibold text-black"
-                  : "rounded-full px-5 py-2 font-semibold text-white hover:bg-white/10"
-              }
-            >
-              Workouts
-            </Link>
+                    <Link href="/component/my-plan" className={navClass("/component/my-plan")}>
+                        My Plan
+                    </Link>
 
-            {/* My Plan */}
-            <Link
-              href="/my-plan?tab=plan"
-              className={
-                activePage === "my-plan"
-                  ? "rounded-full bg-lime-400 px-5 py-2 font-semibold text-black"
-                  : "rounded-full px-5 py-2 font-semibold text-white hover:bg-white/10"
-              }
-            >
-              My Plan
-            </Link>
+                </nav>
 
-          </div>
-        </div>
+                <div className="hidden items-center gap-6 text-[12px] md:flex">
 
-        {/* Plan + Saved */}
-        <div className="hidden flex-1 items-center justify-end gap-4 sm:flex">
+                    <Link href="/component/my-plan" className="group flex items-center gap-2 text-[#9a9ca4] transition-colors duration-200 hover:text-white">
+                        <span>Plan</span>
 
-          {/* Plan */}
-          <Link
-            href="/my-plan?tab=plan"
-            className="flex items-center gap-2 text-sm font-semibold text-white hover:text-lime-400"
-          >
-            <span>Plan</span>
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#baff00] px-1.5 text-[10px] font-bold text-[#0a0b0d] transition-transform duration-200 group-hover:scale-110">
+                            {myPlanCount}
+                        </span>
+                    </Link>
 
-            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-lime-400 px-1 text-xs font-bold text-black">
+                    <Link href="/component/my-plan" className="group flex items-center gap-2 text-[#9a9ca4] transition-colors duration-200 hover:text-white">
+                        <span>Saved</span>
 
-            </span>
-          </Link>
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full border border-white/[0.12] px-1.5 text-[10px] text-[#9a9ca4] transition-colors duration-200 group-hover:border-[#baff00] group-hover:text-[#baff00]">
+                            {savedCount}
+                        </span>
+                    </Link>
 
-          {/* Saved */}
-          <Link
-            href="/my-plan?tab=saved"
-            className="flex items-center gap-2 text-sm font-semibold text-white hover:text-lime-400"
-          >
-            <span>Saved</span>
+                </div>
 
-            <span className="flex h-5 min-w-5 items-center justify-center rounded-full border border-white/30 px-1 text-xs font-bold text-white">
+                <div className="dropdown dropdown-end md:hidden">
 
-            </span>
-          </Link>
+                    <button tabIndex={0} className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.04] text-white transition-colors duration-200 hover:bg-white/[0.08]">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M4 6h16M4 12h16M4 18h16"
+                            />
+                        </svg>
+                    </button>
 
-        </div>
+                    <ul tabIndex={0} className="menu dropdown-content z-[100] mt-3 w-52 rounded-2xl border border-white/[0.08] bg-[#0d0e11]/95 p-2 shadow-2xl backdrop-blur-xl">
+                        <li>
+                            <Link href="/" className={pathname === "/" ? "text-[#baff00]" : "text-[#9a9ca4] hover:text-[#baff00]"}>Workouts</Link>
+                        </li>
 
-        {/* Mobile Menu Button */}
-        <div className="sm:hidden">
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="rounded-md border border-white/20 px-3 py-2 text-sm"
-          >
-            Menu
-          </button>
-        </div>
+                        <li>
+                            <Link href="/component/my-plan" className={pathname === "/component/my-plan" ? "text-[#baff00]" : "text-[#9a9ca4] hover:text-[#baff00]"}>
+                                My Plan
+                            </Link>
+                        </li>
 
-      </div>
+                        <li>
+                            <Link href="/component/my-plan">
+                                Plan
+                                <span className="ml-auto rounded-full bg-[#baff00] px-2 py-0.5 text-[10px] font-bold text-[#0a0b0d]">
+                                    {myPlanCount}
+                                </span>
+                            </Link>
+                        </li>
 
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="border-t border-white/10 bg-[#0b0f10] px-4 py-4 sm:hidden">
+                        <li>
+                            <Link href="/component/my-plan">
+                                Saved
+                                <span className="ml-auto rounded-full border border-white/[0.12] px-2 py-0.5 text-[10px]">
+                                    {savedCount}
+                                </span>
+                            </Link>
+                        </li>
+                    </ul>
 
-          <div className="flex flex-col gap-2">
+                </div>
 
-            <Link
-              href="/"
-              onClick={() => setIsMenuOpen(false)}
-              className="rounded-lg px-4 py-3 text-sm font-semibold hover:bg-white/10"
-            >
-              Workouts
-            </Link>
-
-            <Link
-              href="/my-plan?tab=plan"
-              onClick={() => setIsMenuOpen(false)}
-              className="rounded-lg px-4 py-3 text-sm font-semibold hover:bg-white/10"
-            >
-              My Plan
-            </Link>
-
-            <Link
-              href="/my-plan?tab=plan"
-              onClick={() => setIsMenuOpen(false)}
-              className="rounded-lg px-4 py-3 text-sm font-semibold hover:bg-white/10"
-            >
- 
-            </Link>
-
-            <Link
-              href="/my-plan?tab=saved"
-              onClick={() => setIsMenuOpen(false)}
-              className="rounded-lg px-4 py-3 text-sm font-semibold hover:bg-white/10"
-            >
-    
-            </Link>
-
-          </div>
-
-        </div>
-      )}
-    </nav>
-  );
+            </div>
+        </nav>
+    );
 };
 
 export default Navbar;
