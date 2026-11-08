@@ -1,13 +1,13 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import hotToast, { Toaster } from "react-hot-toast";
 import { getWorkouts } from "@/lib/api";
 import type { PlanItem, Workout } from "@/types/workoutTypes";
 
 export const PLAN_CAP = 5;
 const KEY = "fitlog:v1";
-
-type Toast = { id: number; message: string };
+type ToastKind = "success" | "warn";
 
 type Ctx = {
   workouts: Workout[];
@@ -20,7 +20,7 @@ type Ctx = {
   removeFromPlan: (id: string) => void;
   removeFromSaved: (id: string) => void;
   markDone: (id: string) => void;
-  toast: (message: string) => void;
+  toast: (message: string, kind?: ToastKind) => void;
 };
 
 const FitlogContext = createContext<Ctx | null>(null);
@@ -32,7 +32,6 @@ export function FitlogProvider({ children }: { children: React.ReactNode }) {
   const [plan, setPlan] = useState<PlanItem[]>([]);
   const [saved, setSaved] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
-  const [toasts, setToasts] = useState<Toast[]>([]);
 
   // Fetch the library once for the whole app.
   useEffect(() => {
@@ -52,7 +51,7 @@ export function FitlogProvider({ children }: { children: React.ReactNode }) {
         setPlan(Array.isArray(d.plan) ? d.plan : []);
         setSaved(Array.isArray(d.saved) ? d.saved : []);
       }
-    } catch {}
+    } catch { }
     setHydrated(true);
   }, []);
 
@@ -60,19 +59,17 @@ export function FitlogProvider({ children }: { children: React.ReactNode }) {
     if (!hydrated) return;
     try {
       localStorage.setItem(KEY, JSON.stringify({ plan, saved }));
-    } catch {}
+    } catch { }
   }, [plan, saved, hydrated]);
 
-  const toast = useCallback((message: string) => {
-    const id = Date.now() + Math.random();
-    setToasts((t) => [...t, { id, message }]);
-    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 2600);
+  const toast = useCallback((message: string, kind: ToastKind = "success") => {
+    hotToast(message, { icon: kind === "warn" ? "❌" : "✅" });
   }, []);
 
   const addToPlan = useCallback(
     (w: Workout) => {
-      if (plan.some((p) => p.id === w.id)) return toast("Already in today's plan");
-      if (plan.length >= PLAN_CAP) return toast(`Plan is full — max ${PLAN_CAP} lifts`);
+      if (plan.some((p) => p.id === w.id)) return toast("Already in today's plan", "warn");
+      if (plan.length >= PLAN_CAP) return toast(`Plan is full — max ${PLAN_CAP} lifts`, "warn");
       setPlan((p) => [...p, { id: w.id, done: false }]);
       toast("Added to today's plan");
     },
@@ -81,7 +78,7 @@ export function FitlogProvider({ children }: { children: React.ReactNode }) {
 
   const saveForLater = useCallback(
     (w: Workout) => {
-      if (saved.includes(w.id)) return toast("Already saved");
+      if (saved.includes(w.id)) return toast("Already in your saved list", "warn");
       setSaved((s) => [...s, w.id]);
       toast("Saved for later");
     },
@@ -120,18 +117,24 @@ export function FitlogProvider({ children }: { children: React.ReactNode }) {
   return (
     <FitlogContext.Provider value={value}>
       {children}
-      <div className="pointer-events-none fixed inset-x-0 bottom-6 z-[100] flex flex-col items-center gap-2 px-4">
-        {toasts.map((t) => (
-          <div
-            key={t.id}
-            role="status"
-            className="toast-in pointer-events-auto flex items-center gap-2 rounded-xl border border-[#2d313b] bg-[#15171d] px-4 py-3 text-sm font-medium text-white shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-          >
-            <span className="h-2 w-2 rounded-full bg-[#ccff00]" />
-            {t.message}
-          </div>
-        ))}
-      </div>
+      <Toaster
+        position="top-right"
+        containerStyle={{ top: 88, right: 24 }}
+        toastOptions={{
+          duration: 2600,
+          style: {
+            background: "rgba(55, 62, 82, 0.85)",
+            backdropFilter: "blur(8px)",
+            color: "#ffffff",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "12px",
+            fontSize: "14px",
+            fontWeight: 600,
+            padding: "10px 16px",
+          },
+          iconTheme: { primary: "#ccff00", secondary: "#0f1115" },
+        }}
+      />
     </FitlogContext.Provider>
   );
 }

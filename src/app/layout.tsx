@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Inter, Oswald } from "next/font/google";
 import "./globals.css";
@@ -18,7 +19,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${inter.variable} ${oswald.variable}`}>
       <body className="flex min-h-screen flex-col">
         <FitlogProvider>
-          <Navbar />
+          <Suspense fallback={<div className="h-20 border-b border-[#1c1f26] bg-[#0c0d10]" />}>
+            <Navbar />
+          </Suspense>
           <main className="flex-1">{children}</main>
           <Footer />
         </FitlogProvider>
